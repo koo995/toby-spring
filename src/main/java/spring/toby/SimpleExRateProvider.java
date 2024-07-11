@@ -6,8 +6,7 @@ import java.math.BigDecimal;
 /**
  * 만약에 고정 환율이라면?
  */
-public class SimpleExRatePaymentService extends PaymentService{
-    @Override
+public class SimpleExRateProvider  {
     BigDecimal getExRate(String currency) throws IOException {
         if (currency.equals("USD")) {
             return BigDecimal.valueOf(1000);
