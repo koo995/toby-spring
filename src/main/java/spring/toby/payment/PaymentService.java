@@ -1,7 +1,6 @@
 package spring.toby.payment;
 
 import org.springframework.stereotype.Service;
-import spring.toby.exrate.ExRateProvider;
 
 import java.io.IOException;
 import java.math.BigDecimal;
