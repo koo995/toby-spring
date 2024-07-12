@@ -1,11 +1,14 @@
 package spring.toby;
 
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 
 /**
  * 만약에 고정 환율이라면?
  */
+@Component
 public class SimpleExRateProvider  implements ExRateProvider{
 
     @Override

@@ -1,9 +1,12 @@
 package spring.toby;
 
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Service
 public class PaymentService {
 
     private final ExRateProvider exRateProvider;
