@@ -1,6 +1,12 @@
 package spring.toby;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
 public class ObjectFactory {
+
+    @Bean
     public PaymentService paymentService() {
         return new PaymentService(exRateProvider()) ;
     }
@@ -10,6 +16,7 @@ public class ObjectFactory {
      * 나중에 ExRateProvider 를 바꾸고 싶다면
      * 메서드를 통해 빨리 찾아갈 수 있다.
      */
+    @Bean
     public ExRateProvider exRateProvider() {
         return new WebApiExRateProvider();
     }
