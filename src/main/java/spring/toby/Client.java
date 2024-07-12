@@ -2,6 +2,8 @@ package spring.toby;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import spring.toby.payment.Payment;
+import spring.toby.payment.PaymentService;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;

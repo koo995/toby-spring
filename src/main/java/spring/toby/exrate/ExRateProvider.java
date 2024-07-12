@@ -1,4 +1,4 @@
-package spring.toby;
+package spring.toby.exrate;
 
 import java.io.IOException;
 import java.math.BigDecimal;

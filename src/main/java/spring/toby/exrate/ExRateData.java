@@ -1,4 +1,4 @@
-package spring.toby;
+package spring.toby.exrate;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -10,5 +10,5 @@ import java.util.Map;
  * 우리는 json 에서 필요한 것만 뽑아서 사용할 것이니, 생성자에 없는 것들은 무시하자
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record ExchangeData(String result, Map<String, BigDecimal> rates) {
+public record ExRateData(String result, Map<String, BigDecimal> rates) {
 }

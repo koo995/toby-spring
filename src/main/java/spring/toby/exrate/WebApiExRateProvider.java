@@ -1,4 +1,4 @@
-package spring.toby;
+package spring.toby.exrate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -21,7 +21,7 @@ public class WebApiExRateProvider implements ExRateProvider{
         br.close();
 
         ObjectMapper mapper = new ObjectMapper();
-        ExchangeData data = mapper.readValue(response, ExchangeData.class);
+        ExRateData data = mapper.readValue(response, ExRateData.class);
         return data.rates().get("KRW");
     }
 }

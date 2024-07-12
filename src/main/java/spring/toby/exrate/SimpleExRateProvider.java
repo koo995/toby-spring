@@ -1,4 +1,4 @@
-package spring.toby;
+package spring.toby.exrate;
 
 import org.springframework.stereotype.Component;
 
