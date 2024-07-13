@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 
 @Configuration
 //@ComponentScan
-public class TestObjectFactory {
+public class TestPaymentConfig {
 
     @Bean
     public PaymentService paymentService() {

@@ -6,7 +6,7 @@
  import org.springframework.beans.factory.annotation.Autowired;
  import org.springframework.test.context.ContextConfiguration;
  import org.springframework.test.context.junit.jupiter.SpringExtension;
- import spring.toby.TestObjectFactory;
+ import spring.toby.TestPaymentConfig;
 
  import java.time.LocalDateTime;
 
@@ -20,7 +20,7 @@
   * @ExtendWith(SpringExtension.class) 를 사용하면 스프링 테스트 컨텍스트 프레임워크를 junit이 사용할 수 있다. 이것은 기계적으로 기억하자
   */
  @ExtendWith(SpringExtension.class)
- @ContextConfiguration(classes = TestObjectFactory.class)
+ @ContextConfiguration(classes = TestPaymentConfig.class)
 class PaymentServiceSpringTest {
 
     @Autowired PaymentService paymentService;

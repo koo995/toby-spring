@@ -17,7 +17,7 @@ public class Client {
          * 이 빈팩토리는 스프링에 있는 빈 팩토리다. 우리 만든 애플리케이션의 구성정보를 모른다.
          * 그 구성정보를 참고하도록 해줘야한다.
          */
-        BeanFactory beanFactory = new AnnotationConfigApplicationContext(ObjectFactory.class);
+        BeanFactory beanFactory = new AnnotationConfigApplicationContext(PaymentConfig.class);
         PaymentService paymentService = beanFactory.getBean(PaymentService.class);
         Payment payment1 = paymentService.prepare(100L, "USD", java.math.BigDecimal.valueOf(50.7));
         System.out.println(payment1);

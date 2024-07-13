@@ -10,7 +10,7 @@ import java.time.Clock;
 
 @Configuration
 //@ComponentScan
-public class ObjectFactory {
+public class PaymentConfig {
 
     @Bean
     public PaymentService paymentService() {
