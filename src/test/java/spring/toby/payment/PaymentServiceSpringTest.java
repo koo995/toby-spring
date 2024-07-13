@@ -8,6 +8,7 @@
  import org.springframework.test.context.junit.jupiter.SpringExtension;
  import spring.toby.TestPaymentConfig;
 
+ import java.time.Clock;
  import java.time.LocalDateTime;
 
  import static java.math.BigDecimal.TEN;
@@ -18,6 +19,7 @@
   * @ContextConfiguration 은 테스트가 실행할때 스프링의 구성정보를 읽은 다음에 이걸 가지고 스프링 컨테이너를 만들고
   * @Autowired 를 통해 의존성 주입을 받을 수 있다.
   * @ExtendWith(SpringExtension.class) 를 사용하면 스프링 테스트 컨텍스트 프레임워크를 junit이 사용할 수 있다. 이것은 기계적으로 기억하자
+  * Clock 을 이용할때 여기서는 달라지는 것이 없다. 이미 모든 자신이 사용할 의존 오브젝트가 다 주입되어 만들어진 것을 autowired 을 이용하여 가져오면 되니까
   */
  @ExtendWith(SpringExtension.class)
  @ContextConfiguration(classes = TestPaymentConfig.class)
@@ -28,6 +30,7 @@ class PaymentServiceSpringTest {
       * 테스트에 한해서 ExRateProviderStub 을 직접 제어하며 테스트 하고 싶다면 이렇게 하면 된다.
       */
     @Autowired ExRateProviderStub exRateProvider;
+    @Autowired Clock clock;
 
     @DisplayName("prepare 메소드가 요구사항 3가지를 잘 충족했는지 검증")
     @Test
@@ -62,4 +65,16 @@ class PaymentServiceSpringTest {
         assertThat(payment2.getValidUntil()).isAfter(LocalDateTime.now());
         assertThat(payment2.getValidUntil()).isBefore(LocalDateTime.now().plusMinutes(30));
     }
+
+     @DisplayName("유효시간이 30분 뒤인지 검증")
+     @Test
+     void validUntil () throws Exception {
+         // when
+         Payment payment = paymentService.prepare(100L, "USD", TEN);
+
+         // then
+         LocalDateTime now = LocalDateTime.now(this.clock);
+         LocalDateTime expectedValidUntil = now.plusMinutes(30);
+         assertThat(payment.getValidUntil()).isEqualTo(expectedValidUntil);
+     }
 }
