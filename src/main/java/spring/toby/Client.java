@@ -6,7 +6,6 @@ import spring.toby.payment.Payment;
 import spring.toby.payment.PaymentService;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 관계 설정의 책임을 Client 가 가져오게 되었다.
@@ -22,16 +21,6 @@ public class Client {
         PaymentService paymentService = beanFactory.getBean(PaymentService.class);
         Payment payment1 = paymentService.prepare(100L, "USD", java.math.BigDecimal.valueOf(50.7));
         System.out.println(payment1);
-        Payment payment2 = paymentService.prepare(100L, "USD", java.math.BigDecimal.valueOf(50.7));
-        System.out.println(payment2);
-
-        TimeUnit.SECONDS.sleep(5);
-        Payment payment3 = paymentService.prepare(100L, "USD", java.math.BigDecimal.valueOf(50.7));
-        System.out.println(payment3);
-
-
-
-
     }
 }
 
