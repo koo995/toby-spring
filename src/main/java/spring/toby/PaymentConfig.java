@@ -2,10 +2,8 @@ package spring.toby;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import spring.toby.api.ApiTemplate;
-import spring.toby.api.ErApiExRateExtractor;
-import spring.toby.api.SimpleApiExecutor;
-import spring.toby.exrate.WebApiExRateProvider;
+import org.springframework.web.client.RestTemplate;
+import spring.toby.exrate.RestTemplateExRateProvider;
 import spring.toby.payment.ExRateProvider;
 import spring.toby.payment.PaymentService;
 
@@ -21,13 +19,13 @@ public class PaymentConfig {
     }
 
     @Bean
-    public ApiTemplate apiTemplate() {
-        return new ApiTemplate(new SimpleApiExecutor(), new ErApiExRateExtractor());
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 
     @Bean
     public ExRateProvider exRateProvider() {
-        return new WebApiExRateProvider(apiTemplate());
+        return new RestTemplateExRateProvider(restTemplate());
     }
 
     @Bean
