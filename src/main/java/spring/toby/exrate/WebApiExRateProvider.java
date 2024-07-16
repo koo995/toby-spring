@@ -3,6 +3,7 @@ package spring.toby.exrate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import spring.toby.api.ApiExecutor;
+import spring.toby.api.ExRateExtractor;
 import spring.toby.api.SimpleApiExecutor;
 import spring.toby.payment.ExRateProvider;
 
@@ -19,7 +20,11 @@ public class WebApiExRateProvider implements ExRateProvider {
     @Override
     public BigDecimal getExRate(String currency) {
         String url = "https://open.er-api.com/v6/latest/" + currency;
-        return runApiForExRate(url, new SimpleApiExecutor());
+        return runApiForExRate(url, new SimpleApiExecutor(), response -> {
+            ObjectMapper mapper = new ObjectMapper();
+            ExRateData data = mapper.readValue(response, ExRateData.class);
+            return data.rates().get("KRW");
+        });
     }
 
     /**
@@ -29,7 +34,7 @@ public class WebApiExRateProvider implements ExRateProvider {
      * 우리가 작성하는 코드에 의해서. SimpleApiExecutor 이 바로 콜백이다. 변경이 필요할 때, 이 클래스를 변경하면 된다. 클래스를 정의하지 않고 람다를 사용해도 된다.
      * 이 콜백을 받아서 내부에서 수행하는 runApiForExRate 이 템플릿이다.
      */
-    private static BigDecimal runApiForExRate(String url, ApiExecutor apiExecutor) {
+    private static BigDecimal runApiForExRate(String url, ApiExecutor apiExecutor, ExRateExtractor exRateExtractor) {
         URI uri;
         try {
             uri = new URI(url);
@@ -45,18 +50,9 @@ public class WebApiExRateProvider implements ExRateProvider {
         }
 
         try {
-            return extractExRate(response);
+            return exRateExtractor.extract(response);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * 메서드 명을 지을때 그 안에 어떻게 동작하는 지 기술하는 것 보다 목적을 기술하는 것이 더 나을거 같아서 변경
-     */
-    private static BigDecimal extractExRate(String response) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        ExRateData data = mapper.readValue(response, ExRateData.class);
-        return data.rates().get("KRW");
     }
 }
