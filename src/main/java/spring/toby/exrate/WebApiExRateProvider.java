@@ -43,13 +43,16 @@ public class WebApiExRateProvider implements ExRateProvider {
         }
 
         try {
-            return parseExRate(response);
+            return extractExRate(response);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static BigDecimal parseExRate(String response) throws JsonProcessingException {
+    /**
+     * 메서드 명을 지을때 그 안에 어떻게 동작하는 지 기술하는 것 보다 목적을 기술하는 것이 더 나을거 같아서 변경
+     */
+    private static BigDecimal extractExRate(String response) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         ExRateData data = mapper.readValue(response, ExRateData.class);
         return data.rates().get("KRW");
