@@ -2,12 +2,10 @@ package spring.toby.exrate;
 
 import spring.toby.api.ApiTemplate;
 import spring.toby.api.ErApiExRateExtractor;
+import spring.toby.api.HttpClientApiExecutor;
 import spring.toby.payment.ExRateProvider;
 
 import java.math.BigDecimal;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 
 public class WebApiExRateProvider implements ExRateProvider {
 
@@ -21,16 +19,6 @@ public class WebApiExRateProvider implements ExRateProvider {
     @Override
     public BigDecimal getExRate(String currency) {
         String url = "https://open.er-api.com/v6/latest/" + currency;
-        return apiTemplate.getExRate(url, uri -> {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(uri)
-                    .GET()
-                    .build();
-            try(HttpClient client = HttpClient.newBuilder().build()) {
-                return client.send(request, HttpResponse.BodyHandlers.ofString()).body();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        } ,new ErApiExRateExtractor());
+        return apiTemplate.getExRate(url, new HttpClientApiExecutor(), new ErApiExRateExtractor());
     }
 }
