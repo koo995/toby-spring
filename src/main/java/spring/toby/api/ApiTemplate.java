@@ -17,6 +17,10 @@ public class ApiTemplate {
         this.exRateExtractor = new ErApiExRateExtractor();
     }
 
+    public ApiTemplate(ApiExecutor apiExecutor, ExRateExtractor exRateExtractor) {
+        this.apiExecutor = apiExecutor;
+        this.exRateExtractor = exRateExtractor;
+    }
 
     /**
      * 디폴트 콜백을 내가 원하는 만큼 설정할 수 있다.
