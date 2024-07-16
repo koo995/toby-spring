@@ -1,8 +1,8 @@
 package spring.toby.exrate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import spring.toby.api.ApiExecutor;
+import spring.toby.api.ErApiExRateExtractor;
 import spring.toby.api.ExRateExtractor;
 import spring.toby.api.SimpleApiExecutor;
 import spring.toby.payment.ExRateProvider;
@@ -20,11 +20,7 @@ public class WebApiExRateProvider implements ExRateProvider {
     @Override
     public BigDecimal getExRate(String currency) {
         String url = "https://open.er-api.com/v6/latest/" + currency;
-        return runApiForExRate(url, new SimpleApiExecutor(), response -> {
-            ObjectMapper mapper = new ObjectMapper();
-            ExRateData data = mapper.readValue(response, ExRateData.class);
-            return data.rates().get("KRW");
-        });
+        return runApiForExRate(url, new SimpleApiExecutor(),new ErApiExRateExtractor());
     }
 
     /**
