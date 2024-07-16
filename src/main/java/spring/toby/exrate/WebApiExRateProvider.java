@@ -26,11 +26,14 @@ public class WebApiExRateProvider implements ExRateProvider {
      */
     @Override
     public BigDecimal getExRate(String currency) {
-        String url = "https://open.er-api.com/v6/latest/";
+        String url = "https://open.er-api.com/v6/latest/" + currency;
+        return runApiForExRate(url);
+    }
 
+    private static BigDecimal runApiForExRate(String url) {
         URI uri;
         try {
-            uri = new URI(url + currency);
+            uri = new URI(url);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
