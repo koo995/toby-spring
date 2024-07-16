@@ -11,8 +11,16 @@ public class WebApiExRateProvider implements ExRateProvider {
      * 템플릿을 만들어서 분리하였다.
      * 템플릿은 그 안에 상태값을 가지고 계속 변경되는 것이 아니고 서버에서 동작한다고 한다 하더라도
      * 멀티스레드에서 안전하므로 클래스의 인스턴스가 만들어질때 딱 하나만 만들어지도록하고 재사용하도록한다.
+     * 하지만... 호출할 때마다 매번 새로운 ApiTemplate 를 만들어야 하나? 이런 생각을 할 수 있다. 미묘하지만 성능에 영향을 줄 수 있다.
+     * ApiTemplate 은 WebApiExRateProvider 여기서만 사용되는 걸까?
+     * 그럴 수 있지만 프로젝트가 굉장히 커진다면 다른 모듈에서도 이 템플릿을 쓸 수 있다.
+     * 애플리케이션에서 공유가능한 객체로 사용될 것 같다면 스프링 컨테이너 안에 싱글톤 빈으로 올려서 사용하는 것을 고려할 수 있다.
      */
-    ApiTemplate apiTemplate = new ApiTemplate();
+    private final ApiTemplate apiTemplate;
+
+    public WebApiExRateProvider(ApiTemplate apiTemplate) {
+        this.apiTemplate = apiTemplate;
+    }
 
     @Override
     public BigDecimal getExRate(String currency) {
