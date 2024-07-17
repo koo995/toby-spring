@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 /**
  * data 와 관련된 코드를 처리할 client 을 만들어보자.
  */
-public class DataClient {
+public class OrderClient {
     public static void main(String[] args) {
         BeanFactory beanFactory = new AnnotationConfigApplicationContext(DataConfig.class);
         OrderRepository orderRepository = beanFactory.getBean(OrderRepository.class);
@@ -27,11 +27,7 @@ public class DataClient {
             new TransactionTemplate(transactionManager).execute(status -> {
                 Order order = new Order(BigDecimal.TEN, "100");
                 orderRepository.save(order);
-
                 System.out.println("order = " + order);
-
-                Order order1 = new Order(BigDecimal.ONE, "100");
-                orderRepository.save(order1);
                 return null;
             });
 
