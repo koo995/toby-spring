@@ -3,6 +3,7 @@ package spring.toby;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import spring.toby.data.OrderRepository;
 import spring.toby.order.OrderService;
 
@@ -10,9 +11,13 @@ import spring.toby.order.OrderService;
 @Import(DataConfig.class) // 이렇게 다른 설정을 가져올 수 있다.
 public class OrderConfig {
 
+    /**
+     * txManager 는 같은 클래스에서 정의한 것은 아니니까
+     * 빈 팩토리 메서드에 파라미터로 전달받을 수 있다.
+     */
     @Bean
-    public OrderService orderService() {
-        return new OrderService(orderRepository());
+    public OrderService orderService(JpaTransactionManager transactionManager) {
+        return new OrderService(orderRepository(), transactionManager);
     }
 
     /**
