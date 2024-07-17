@@ -19,7 +19,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(BigDecimal total, String no) {
+    public Order(String no, BigDecimal total) {
         this.total = total;
         this.no = no;
     }

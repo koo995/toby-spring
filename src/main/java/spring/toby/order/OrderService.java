@@ -14,7 +14,7 @@ public class OrderService {
     }
 
     public Order createOrder(String no, BigDecimal total) {
-        Order order = new Order(total, no);
+        Order order = new Order(no, total);
         this.orderRepository.save(order);
         return null;
     }
