@@ -1,35 +1,20 @@
 package spring.toby.data;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.PersistenceContext;
 import spring.toby.order.Order;
 
 public class OrderRepository {
 
-    private final EntityManagerFactory emf;
+    /**
+     * java 표준에 들어있는 것이다. 엔티티 매니저는 트랜잭션마다 새롭게 만들어져야 한다.
+     * 이런 방법으로 가져올 수 있다.
+     */
+    @PersistenceContext
+    private EntityManager em;
 
-    public OrderRepository(EntityManagerFactory emf) {
-        this.emf = emf;
-    }
 
     public void save(Order order) {
-
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-        transaction.begin();
-
-        try {
-            em.persist(order);
-            transaction.commit();
-        } catch (RuntimeException e) {
-            if (transaction.isActive()) transaction.rollback();
-            throw e;
-        } finally {
-            if (em.isOpen()) {
-                em.close();
-            }
-        }
-
+        em.persist(order);
     }
 }
