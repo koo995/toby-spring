@@ -2,6 +2,7 @@ package spring.toby.data;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
 import spring.toby.order.Order;
 
 public class OrderRepository {
@@ -15,12 +16,20 @@ public class OrderRepository {
     public void save(Order order) {
 
         EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
 
-        em.persist(order);
-
-        em.getTransaction().commit();
-        em.close();
+        try {
+            em.persist(order);
+            transaction.commit();
+        } catch (RuntimeException e) {
+            if (transaction.isActive()) transaction.rollback();
+            throw e;
+        } finally {
+            if (em.isOpen()) {
+                em.close();
+            }
+        }
 
     }
 }
