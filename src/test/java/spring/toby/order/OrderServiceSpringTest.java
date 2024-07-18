@@ -64,10 +64,8 @@ public class OrderServiceSpringTest {
                 .query(Integer.class)
                 .single();
         /**
-         * 결과가 0이 아니라 1이 나타났다.
-         * 결국 하나의 트랜잭션으로 동작하지 않았음을 나타낸다.
-         * 각각의 createOrder 가 독립된 tx로 수행되었다.
+         * 하나의 tx로 동작함을 볼수있다.
          */
-        assertThat(count).isEqualTo(1);
+        assertThat(count).isEqualTo(0);
     }
 }
