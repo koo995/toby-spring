@@ -29,4 +29,8 @@ public class Order {
     public BigDecimal getTotal() {
         return total;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
