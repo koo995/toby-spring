@@ -4,9 +4,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.PlatformTransactionManager;
-import spring.toby.data.JpaOrderRepository;
+import spring.toby.data.JdbcOrderRepository;
 import spring.toby.order.OrderRepository;
 import spring.toby.order.OrderService;
+
+import javax.sql.DataSource;
 
 @Configuration
 @Import(DataConfig.class) // 이렇게 다른 설정을 가져올 수 있다.
@@ -17,8 +19,9 @@ public class OrderConfig {
      * 빈 팩토리 메서드에 파라미터로 전달받을 수 있다.
      */
     @Bean
-    public OrderService orderService(PlatformTransactionManager transactionManager) {
-        return new OrderService(orderRepository(), transactionManager);
+    public OrderService orderService(PlatformTransactionManager transactionManager,
+                                     DataSource dataSource) {
+        return new OrderService(orderRepository(dataSource), transactionManager);
     }
 
     /**
@@ -26,7 +29,7 @@ public class OrderConfig {
      * Order 와 관련되어 있으니까 OrderConfig 로 옮겼다.
      */
     @Bean
-    public OrderRepository orderRepository() {
-        return new JpaOrderRepository();
+    public OrderRepository orderRepository(DataSource dataSource) {
+        return new JdbcOrderRepository(dataSource);
     }
 }
