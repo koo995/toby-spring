@@ -3,7 +3,7 @@ package spring.toby;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import spring.toby.data.JpaOrderRepository;
 import spring.toby.order.OrderRepository;
 import spring.toby.order.OrderService;
@@ -17,7 +17,7 @@ public class OrderConfig {
      * 빈 팩토리 메서드에 파라미터로 전달받을 수 있다.
      */
     @Bean
-    public OrderService orderService(JpaTransactionManager transactionManager) {
+    public OrderService orderService(PlatformTransactionManager transactionManager) {
         return new OrderService(orderRepository(), transactionManager);
     }
 
