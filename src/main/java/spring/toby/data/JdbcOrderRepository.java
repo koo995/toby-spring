@@ -37,6 +37,15 @@ public class JdbcOrderRepository implements OrderRepository {
         Long id = jdbcClient.sql("select next value for orders_SEQ;").query(Long.class).single();// list 가 아니라 하나의 데이터로 가져오니까 single
         System.out.println("id = " + id);
 
+        /**
+         * jpa 는 리플렉션을 이용해서 id 값을 넣어주지만
+         * 여기서 불편하게 리플렉션을 이용하는 것보다 그냥 setter 을 열어준다.
+         * params 의 순서는 되게 중요하다!
+         */
+        order.setId(id);
+        jdbcClient.sql("insert into orders (no,total,id) values (?,?,?);")
+                .params(order.getNo(), order.getTotal(), order.getId())
+                .update();
 
     }
 }
