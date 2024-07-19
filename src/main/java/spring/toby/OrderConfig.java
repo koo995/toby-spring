@@ -3,9 +3,12 @@ package spring.toby;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.transaction.PlatformTransactionManager;
 import spring.toby.data.JdbcOrderRepository;
 import spring.toby.order.OrderRepository;
 import spring.toby.order.OrderService;
+import spring.toby.order.OrderServiceImpl;
+import spring.toby.order.OrderServiceTxProxy;
 
 import javax.sql.DataSource;
 
@@ -18,8 +21,8 @@ public class OrderConfig {
      * 빈 팩토리 메서드에 파라미터로 전달받을 수 있다.
      */
     @Bean
-    public OrderService orderService(OrderRepository orderRepository) {
-        return new OrderService(orderRepository);
+    public OrderService orderService(OrderRepository orderRepository, PlatformTransactionManager transactionManager) {
+        return new OrderServiceTxProxy(new OrderServiceImpl(orderRepository), transactionManager);
     }
 
     /**
