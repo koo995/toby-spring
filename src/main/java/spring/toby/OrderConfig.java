@@ -3,6 +3,7 @@ package spring.toby;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import spring.toby.data.JdbcOrderRepository;
 import spring.toby.order.OrderRepository;
 import spring.toby.order.OrderService;
@@ -12,6 +13,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @Import(DataConfig.class) // 이렇게 다른 설정을 가져올 수 있다.
+@EnableTransactionManagement // 트랜잭션 관리 기능을 하도록 선언할 수 있다. 프록시 만드는 것을 스프링이 해야함을 알려줌
 public class OrderConfig {
 
     /**
