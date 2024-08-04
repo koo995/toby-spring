@@ -2,6 +2,7 @@ package spring.toby;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import spring.toby.user.*;
 
 import java.sql.SQLException;
@@ -12,7 +13,8 @@ public class TobyApplication {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         SpringApplication.run(TobyApplication.class, args);
 
-        UserDao dao = new DaoFactory().userDao();
+        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(DaoFactory.class);
+        UserDao dao = ac.getBean("userDao", UserDao.class);
 
         User user = new User();
         user.setId("whiteship");
