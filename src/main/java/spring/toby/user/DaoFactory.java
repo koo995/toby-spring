@@ -13,12 +13,17 @@ public class DaoFactory {
 
     @Bean
     public UserDao userDao() {
-        return new UserDao(dataSource());
+        return new UserDao(jdbcContext(), dataSource());
     }
 
     @Bean
     public DataSource dataSource() {
         return new DriverManagerDataSource(URL, USERNAME, PASSWORD);
+    }
+
+    @Bean
+    public JdbcContext jdbcContext() {
+        return new JdbcContext(dataSource());
     }
 }
 

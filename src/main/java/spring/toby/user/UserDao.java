@@ -3,7 +3,6 @@ package spring.toby.user;
 import org.springframework.dao.EmptyResultDataAccessException;
 import spring.toby.user.strategy.AddStatement;
 import spring.toby.user.strategy.DeleteAllStatement;
-import spring.toby.user.strategy.StatementStrategy;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -13,14 +12,16 @@ import java.sql.SQLException;
 
 public class UserDao {
     private DataSource dataSource;
+    private JdbcContext jdbcContext;
 
-    public UserDao(DataSource dataSource) {
+    public UserDao(JdbcContext jdbcContext, DataSource dataSource) {
+        this.jdbcContext = jdbcContext;
         this.dataSource = dataSource;
     }
 
     public void add(User user) throws SQLException {
         AddStatement addStatement = new AddStatement(user);
-        jdbcContextWithStatementStrategy(addStatement);
+        jdbcContext.workWithStatementStrategy(addStatement);
     }
 
 
@@ -48,7 +49,7 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException {
-        jdbcContextWithStatementStrategy(new DeleteAllStatement());
+        jdbcContext.workWithStatementStrategy(new DeleteAllStatement());
     }
 
     public int getCount() throws SQLException {
@@ -71,31 +72,6 @@ public class UserDao {
                 } catch (SQLException e) {
                 }
             }
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException e) {
-                }
-            }
-            if (c != null) {
-                try {
-                    c.close();
-                } catch (SQLException e) {
-                }
-            }
-        }
-    }
-
-    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
-        Connection c = null;
-        PreparedStatement ps = null;
-        try {
-            c = dataSource.getConnection();
-            ps = stmt.makePreparedStatement(c);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw e;
-        } finally {
             if (ps != null) {
                 try {
                     ps.close();
