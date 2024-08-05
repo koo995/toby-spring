@@ -1,4 +1,4 @@
-package spring.toby.user;
+package spring.toby.user.strategy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

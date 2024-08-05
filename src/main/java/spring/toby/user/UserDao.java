@@ -1,9 +1,15 @@
 package spring.toby.user;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import spring.toby.user.strategy.AddStatement;
+import spring.toby.user.strategy.DeleteAllStatement;
+import spring.toby.user.strategy.StatementStrategy;
 
 import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UserDao {
     private DataSource dataSource;
@@ -12,22 +18,13 @@ public class UserDao {
         this.dataSource = dataSource;
     }
 
-    public void add(User user) throws ClassNotFoundException, SQLException {
-        Connection c = dataSource.getConnection();
-
-        PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?, ?, ?)");
-        ps.setString(1, user.getId());
-        ps.setString(2, user.getName());
-        ps.setString(3, user.getPassword());
-
-        ps.executeUpdate();
-
-        ps.close();
-        c.close();
+    public void add(User user) throws SQLException {
+        AddStatement addStatement = new AddStatement(user);
+        jdbcContextWithStatementStrategy(addStatement);
     }
 
 
-    public User get(String id) throws ClassNotFoundException, SQLException {
+    public User get(String id) throws SQLException {
         Connection c = dataSource.getConnection();
 
         PreparedStatement ps = c.prepareStatement("select * from users where id = ?");
@@ -61,7 +58,7 @@ public class UserDao {
 
         try {
             c = dataSource.getConnection();
-            ps = makeStatement(c);
+            ps = c.prepareStatement("select count(*) from users");
             rs = ps.executeQuery();
             rs.next();
             return rs.getInt(1);
@@ -87,10 +84,6 @@ public class UserDao {
                 }
             }
         }
-    }
-
-    private static PreparedStatement makeStatement(Connection c) throws SQLException {
-        return c.prepareStatement("delete from users");
     }
 
     public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
