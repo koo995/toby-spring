@@ -55,7 +55,7 @@ public class UserDao {
         PreparedStatement ps = null;
         try {
             c = dataSource.getConnection();
-            ps = c.prepareStatement("delete from users");
+            ps = makeStatement(c);
             ps.executeUpdate();
         } catch (SQLException e) {
             throw e;
@@ -82,7 +82,7 @@ public class UserDao {
 
         try {
             c = dataSource.getConnection();
-            ps = c.prepareStatement("select count(*) from users");
+            ps = makeStatement(c);
             rs = ps.executeQuery();
             rs.next();
             return rs.getInt(1);
@@ -108,5 +108,9 @@ public class UserDao {
                 }
             }
         }
+    }
+
+    private static PreparedStatement makeStatement(Connection c) throws SQLException {
+        return c.prepareStatement("delete from users");
     }
 }
