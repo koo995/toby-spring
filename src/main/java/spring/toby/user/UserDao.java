@@ -10,11 +10,9 @@ import java.util.List;
 
 public class UserDao {
     private final JdbcTemplate jdbcTemplate;
-    private final DataSource dataSource;
 
     public UserDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.dataSource = dataSource;
     }
 
     public void add(final User user) throws SQLException {
