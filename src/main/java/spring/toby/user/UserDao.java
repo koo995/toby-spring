@@ -10,6 +10,16 @@ import java.util.List;
 
 public class UserDao {
     private final JdbcTemplate jdbcTemplate;
+    private RowMapper<User> userRowMapper = new RowMapper<User>() {
+        @Override
+        public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+            User user = new User();
+            user.setId(rs.getString("id"));
+            user.setName(rs.getString("name"));
+            user.setPassword(rs.getString("password"));
+            return user;
+        }
+    };
 
     public UserDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -24,16 +34,7 @@ public class UserDao {
         // queryForObject 는 결과가 하나일 때 사용
         return this.jdbcTemplate.queryForObject("select * from users where id = ?",
                 new Object[]{id},
-                new RowMapper<User>() {
-                    @Override
-                    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        User user = new User();
-                        user.setId(rs.getString("id"));
-                        user.setName(rs.getString("name"));
-                        user.setPassword(rs.getString("password"));
-                        return user;
-                    }
-                });
+                this.userRowMapper);
     }
 
     public void deleteAll() throws SQLException {
@@ -47,15 +48,6 @@ public class UserDao {
 
     public List<User> getAll() throws SQLException {
         return this.jdbcTemplate.query("select * from users order by id",
-                new RowMapper<User>() {
-                    @Override
-                    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        User user = new User();
-                        user.setId(rs.getString("id"));
-                        user.setName(rs.getString("name"));
-                        user.setPassword(rs.getString("password"));
-                        return user;
-                    }
-                });
+                this.userRowMapper);
     }
 }
