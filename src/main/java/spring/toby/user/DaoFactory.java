@@ -2,18 +2,23 @@ package spring.toby.user;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
-//@Configuration
+import javax.sql.DataSource;
+
+import static spring.toby.user.constant.ConnectionConst.*;
+
+@Configuration
 public class DaoFactory {
 
     @Bean
     public UserDao userDao() {
-        return new UserDao(connectionMaker());
+        return new UserDao(dataSource());
     }
 
     @Bean
-    public ConnectionMaker connectionMaker() {
-        return new DConnectionMaker();
+    public DataSource dataSource() {
+        return new DriverManagerDataSource(URL, USERNAME, PASSWORD);
     }
 }
 
