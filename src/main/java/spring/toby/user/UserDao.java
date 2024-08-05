@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class UserDao {
     private final JdbcTemplate jdbcTemplate;
@@ -22,6 +23,7 @@ public class UserDao {
 
 
     public User get(String id) throws SQLException {
+        // queryForObject 는 결과가 하나일 때 사용
         return this.jdbcTemplate.queryForObject("select * from users where id = ?",
                 new Object[]{id},
                 new RowMapper<User>() {
@@ -43,5 +45,19 @@ public class UserDao {
     public int getCount() throws SQLException {
         return this.jdbcTemplate.queryForObject("select count(*) from users",
                 Integer.class);
+    }
+
+    public List<User> getAll() throws SQLException {
+        return this.jdbcTemplate.query("select * from users order by id",
+                new RowMapper<User>() {
+                    @Override
+                    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        User user = new User();
+                        user.setId(rs.getString("id"));
+                        user.setName(rs.getString("name"));
+                        user.setPassword(rs.getString("password"));
+                        return user;
+                    }
+                });
     }
 }
