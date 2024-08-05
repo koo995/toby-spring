@@ -25,6 +25,8 @@ class UserDaoTest {
 
     @BeforeEach
     void before() throws SQLException {
+        System.out.println("ac = " + ac);
+        System.out.println("this = " + this);
         userDao.deleteAll();
     }
 
