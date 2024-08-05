@@ -20,30 +20,30 @@ class UserDaoTest {
     @Autowired
     private ApplicationContext ac;
 
+    @Autowired
+    private UserDao userDao;
+
     @BeforeEach
-    void init() throws SQLException {
-        UserDao dao = ac.getBean("userDao", UserDao.class);
-        dao.deleteAll();
+    void before() throws SQLException {
+        userDao.deleteAll();
     }
 
     @AfterEach
-    void tearDown() throws SQLException {
-        UserDao dao = ac.getBean("userDao", UserDao.class);
-        dao.deleteAll();
+    void after() throws SQLException {
+        userDao.deleteAll();
     }
 
     @DisplayName("Add and Get 테스트")
     @Test
     void addAndGetTest() throws Exception {
         // given
-        UserDao dao = ac.getBean("userDao", UserDao.class);
         User user1 = new User("whiteship", "백기선", "married");
         User user2 = new User("whiteship2", "백기선2", "married2");
 
 
-        dao.add(user1);
+        userDao.add(user1);
 
-        User findUser = dao.get(user1.getId());
+        User findUser = userDao.get(user1.getId());
 
         assertThat(findUser.getId()).isEqualTo(user1.getId());
         assertThat(findUser.getName()).isEqualTo(user1.getName());
@@ -53,31 +53,26 @@ class UserDaoTest {
     @Test
     void countTest() throws Exception {
         // given
-        UserDao dao = ac.getBean("userDao", UserDao.class);
-
         User user1 = new User("whiteship1", "백기선1", "married1");
         User user2 = new User("whiteship2", "백기선2", "married2");
         User user3 = new User("whiteship3", "백기선3", "married3");
 
-        dao.add(user1);
-        dao.add(user2);
-        dao.add(user3);
+        userDao.add(user1);
+        userDao.add(user2);
+        userDao.add(user3);
 
-        assertThat(dao.getCount()).isEqualTo(3);
+        assertThat(userDao.getCount()).isEqualTo(3);
     }
 
     @DisplayName("Get 실패 테스트")
     @Test
     void getFail() throws Exception {
         // given
-        UserDao dao = ac.getBean("userDao", UserDao.class);
-        assertThat(dao.getCount()).isEqualTo(0);
+        assertThat(userDao.getCount()).isEqualTo(0);
 
         // when
         assertThrows(EmptyResultDataAccessException.class, () -> {
-            dao.get("unknown_id");
+            userDao.get("unknown_id");
         });
-
     }
-
 }
