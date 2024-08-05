@@ -2,8 +2,6 @@ package spring.toby.user;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.ResultSetExtractor;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -53,17 +51,9 @@ public class UserDao {
     }
 
     public int getCount() throws SQLException {
-        return this.jdbcTemplate.query(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-                return con.prepareStatement("select count(*) from users");
-            }
-        }, new ResultSetExtractor<Integer>() {
-            @Override
-            public Integer extractData(ResultSet rs) throws SQLException {
-                rs.next();
-                return rs.getInt(1);
-            }
+        return this.jdbcTemplate.query(con -> con.prepareStatement("select count(*) from users"), rs -> {
+            rs.next();
+            return rs.getInt(1);
         });
     }
 }
