@@ -25,5 +25,10 @@ public class DaoFactory {
     public JdbcContext jdbcContext() {
         return new JdbcContext(dataSource());
     }
+
+    @Bean
+    public UserService userService() {
+        return new UserService(userDao());
+    }
 }
 
