@@ -120,4 +120,23 @@ class UserDaoJdbcTest {
         assertThat(user1.getLogin()).isEqualTo(user2.getLogin());
         assertThat(user1.getRecommend()).isEqualTo(user2.getRecommend());
     }
+
+    @DisplayName("사용자 정보 수정 메소드 테스트")
+    @Test
+    void update() throws Exception {
+        // given
+        userDao.add(user1);
+        // when
+
+        user1.setName("오민규");
+        user1.setPassword("springno6");
+        user1.setLevel(Level.GOLD);
+        user1.setLogin(1000);
+        user1.setRecommend(999);
+        userDao.update(user1);
+
+        // then
+        User user1Update = userDao.get(user1.getId());
+        checkSameUser(user1, user1Update);
+    }
 }
