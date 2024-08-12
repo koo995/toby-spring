@@ -126,6 +126,7 @@ class UserDaoJdbcTest {
     void update() throws Exception {
         // given
         userDao.add(user1);
+        userDao.add(user2);
         // when
 
         user1.setName("오민규");
@@ -138,5 +139,7 @@ class UserDaoJdbcTest {
         // then
         User user1Update = userDao.get(user1.getId());
         checkSameUser(user1, user1Update);
+        User user2Same = userDao.get(user2.getId());
+        checkSameUser(user2, user2Same);
     }
 }
