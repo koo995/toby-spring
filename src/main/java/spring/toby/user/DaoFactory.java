@@ -12,8 +12,8 @@ import static spring.toby.user.constant.ConnectionConst.*;
 public class DaoFactory {
 
     @Bean
-    public UserDao userDao() {
-        return new UserDao(dataSource());
+    public UserDaoJdbc userDao() {
+        return new UserDaoJdbc(dataSource());
     }
 
     @Bean
