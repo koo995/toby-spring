@@ -24,11 +24,18 @@ class UserDaoJdbcTest {
     @Autowired
     private UserDao userDao;
 
+    private User user1;
+    private User user2;
+    private User user3;
+
     @BeforeEach
     void before() throws SQLException {
         System.out.println("ac = " + ac);
         System.out.println("this = " + this);
         userDao.deleteAll();
+        this.user1 = new User("gyumee", "박성철", "springno1", Level.BASIC, 1, 0);
+        this.user2 = new User("leegw700", "이길원", "springno2", Level.SILVER, 55, 10);
+        this.user3 = new User("bumjin", "박범진", "springno3", Level.GOLD, 100, 40);
     }
 
     @AfterEach
@@ -39,27 +46,23 @@ class UserDaoJdbcTest {
     @DisplayName("Add and Get 테스트")
     @Test
     void addAndGetTest() throws Exception {
-        // given
-        User user1 = new User("whiteship", "백기선", "married");
-        User user2 = new User("whiteship2", "백기선2", "married2");
-
-
         userDao.add(user1);
+        userDao.add(user2);
+        userDao.add(user3);
 
         User findUser = userDao.get(user1.getId());
+        checkSameUser(user1, findUser);
 
-        assertThat(findUser.getId()).isEqualTo(user1.getId());
-        assertThat(findUser.getName()).isEqualTo(user1.getName());
+        findUser = userDao.get(user2.getId());
+        checkSameUser(user2, findUser);
+
+        findUser = userDao.get(user3.getId());
+        checkSameUser(user3, findUser);
     }
 
     @DisplayName("카운트 테스트")
     @Test
     void countTest() throws Exception {
-        // given
-        User user1 = new User("whiteship1", "백기선1", "married1");
-        User user2 = new User("whiteship2", "백기선2", "married2");
-        User user3 = new User("whiteship3", "백기선3", "married3");
-
         userDao.add(user1);
         userDao.add(user2);
         userDao.add(user3);
@@ -83,26 +86,23 @@ class UserDaoJdbcTest {
     @Test
     void getAll() throws Exception {
         // given
-        User user1 = new User("whiteship1", "백기선1", "married1");
         userDao.add(user1);
         List<User> users1 = userDao.getAll();
         assertThat(users1.size()).isEqualTo(1);
         checkSameUser(user1, users1.get(0));
 
-        User user2 = new User("whiteship2", "백기선2", "married2");
         userDao.add(user2);
         List<User> users2 = userDao.getAll();
         assertThat(users2.size()).isEqualTo(2);
         checkSameUser(user1, users2.get(0));
         checkSameUser(user2, users2.get(1));
 
-        User user3 = new User("whiteship3", "백기선3", "married3");
         userDao.add(user3);
         List<User> users3 = userDao.getAll();
         assertThat(users3.size()).isEqualTo(3);
-        checkSameUser(user1, users3.get(0));
-        checkSameUser(user2, users3.get(1));
-        checkSameUser(user3, users3.get(2));
+        checkSameUser(user1, users3.get(1));
+        checkSameUser(user2, users3.get(2));
+        checkSameUser(user3, users3.get(0));
     }
 
     @DisplayName("데이터가 없을 때의 getAll 테스트")
@@ -116,5 +116,8 @@ class UserDaoJdbcTest {
         assertThat(user1.getId()).isEqualTo(user2.getId());
         assertThat(user1.getName()).isEqualTo(user2.getName());
         assertThat(user1.getPassword()).isEqualTo(user2.getPassword());
+        assertThat(user1.getLevel()).isEqualTo(user2.getLevel());
+        assertThat(user1.getLogin()).isEqualTo(user2.getLogin());
+        assertThat(user1.getRecommend()).isEqualTo(user2.getRecommend());
     }
 }
