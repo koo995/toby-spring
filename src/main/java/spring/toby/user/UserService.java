@@ -1,10 +1,11 @@
 package spring.toby.user;
 
-import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.util.List;
 
 public class UserService {
@@ -21,10 +22,8 @@ public class UserService {
     }
 
     public void upgradeLevels() throws Exception {
-        TransactionSynchronizationManager.initSynchronization();
-        // DataSourceUtils 사용해야 커넥션 오브젝트나 트랜잭션 동기화에 사용하도록 저장소에 바인딩이 가능
-        Connection c = DataSourceUtils.getConnection(dataSource);
-        c.setAutoCommit(false);
+        PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);// 트랜잭션 매니저 생성
+        TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
 
         try {
             List<User> users = userDao.getAll();
@@ -33,14 +32,10 @@ public class UserService {
                     upgradeLevel(user);
                 }
             }
-            c.commit();
+            transactionManager.commit(status);
         } catch (Exception e) {
-            c.rollback();
+            transactionManager.rollback(status);
             throw e;
-        } finally {
-            DataSourceUtils.releaseConnection(c, dataSource);
-            TransactionSynchronizationManager.unbindResource(this.dataSource);
-            TransactionSynchronizationManager.clearSynchronization();
         }
     }
 
