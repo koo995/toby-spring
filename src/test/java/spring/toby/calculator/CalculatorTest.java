@@ -21,4 +21,10 @@ class CalculatorTest {
     void sumOfNumbers() throws Exception {
         Assertions.assertThat(calculator.calcSum(this.numFilepath)).isEqualTo(10);
     }
+
+    @DisplayName("곱하기 테스트")
+    @Test
+    void multiplyOfNumbers() throws Exception {
+        Assertions.assertThat(calculator.calcMultiply(this.numFilepath)).isEqualTo(24);
+    }
 }
