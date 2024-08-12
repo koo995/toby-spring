@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static spring.toby.user.UserService.*;
 
 @Transactional
 @SpringBootTest
@@ -24,11 +25,11 @@ class UserServiceTest {
     @BeforeEach
     public void init() {
         users = Arrays.asList(
-                new User("bumgin", "박범진", "P1", Level.BASIC, 49, 0),
-                new User("joytouch", "강명성", "P2", Level.BASIC, 50, 0),
-                new User("erwins", "신승한", "P3", Level.SILVER, 60, 29),
-                new User("madnite1", "이상호", "P4", Level.SILVER, 60, 30),
-                new User("green", "오민규", "P5", Level.GOLD, 100, 100));
+                new User("bumgin", "박범진", "P1", Level.BASIC, MIN_LOG_COUNT_FOR_SILVER-1, 0),
+                new User("joytouch", "강명성", "P2", Level.BASIC, MIN_LOG_COUNT_FOR_SILVER, 0),
+                new User("erwins", "신승한", "P3", Level.SILVER, 60, MIN_RECOMMEND_FOR_GOLD-1),
+                new User("madnite1", "이상호", "P4", Level.SILVER, 60, MIN_RECOMMEND_FOR_GOLD),
+                new User("green", "오민규", "P5", Level.GOLD, 100, Integer.MAX_VALUE));
     }
 
 
