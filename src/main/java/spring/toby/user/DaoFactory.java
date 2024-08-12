@@ -29,8 +29,13 @@ public class DaoFactory {
     }
 
     @Bean
+    public UserService userServiceImpl() {
+        return new UserServiceImpl(userDao());
+    }
+
+    @Bean
     public UserService userService() {
-        return new UserService(userDao(), dataSource(), transactionManager());
+        return new UserServiceTx(userServiceImpl(), transactionManager());
     }
 
     @Bean

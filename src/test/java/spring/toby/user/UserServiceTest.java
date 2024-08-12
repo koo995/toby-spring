@@ -12,13 +12,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static spring.toby.user.UserService.MIN_LOG_COUNT_FOR_SILVER;
-import static spring.toby.user.UserService.MIN_RECOMMEND_FOR_GOLD;
+import static spring.toby.user.UserServiceImpl.MIN_LOG_COUNT_FOR_SILVER;
+import static spring.toby.user.UserServiceImpl.MIN_RECOMMEND_FOR_GOLD;
 
 @SpringBootTest
 class UserServiceTest {
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserServiceImpl userServiceImpl;
+
     private List<User> users;
     @Autowired
     private UserDaoJdbc userDao;
@@ -78,14 +81,16 @@ class UserServiceTest {
     @Test
     void upgradeAllOrNothing() throws Exception {
         // given
-        UserService testUserService = new TestUserService(users.get(3).getId(), userDao, dataSource, transactionManager);
+        UserServiceImpl testUserService = new TestUserService(users.get(3).getId(), userDao);
+        UserServiceTx txUserService = new UserServiceTx(testUserService, transactionManager);
+
         // when
         for (User user : users) {
             userDao.add(user);
         }
 
         try {
-            testUserService.upgradeLevels();
+            txUserService.upgradeLevels();
 //            fail("TestUserServiceException expected");
         } catch (TestUserServiceException e) {
         }
@@ -100,12 +105,12 @@ class UserServiceTest {
             assertThat(userUpdate.getLevel()).isEqualTo(user.getLevel());
         }
     }
-    static class TestUserService extends UserService {
+    static class TestUserService extends UserServiceImpl {
         private String id;
 
         @Autowired
-        private TestUserService(String id, UserDao userDao, DataSource dataSource, PlatformTransactionManager transactionManager) {
-            super(userDao, dataSource, transactionManager);
+        private TestUserService(String id, UserDao userDao) {
+            super(userDao);
             this.id = id;
         }
 
