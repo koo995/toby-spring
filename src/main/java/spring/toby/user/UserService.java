@@ -1,6 +1,5 @@
 package spring.toby.user;
 
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -15,16 +14,16 @@ public class UserService {
 
     private final UserDao userDao;
     private final DataSource dataSource; // db커넥션을 직접 다둘려면 필요하다.
+    private final PlatformTransactionManager transactionManager;
 
-    public UserService(UserDao userDao, DataSource dataSource) {
+    public UserService(UserDao userDao, DataSource dataSource, PlatformTransactionManager transactionManager) {
         this.userDao = userDao;
         this.dataSource = dataSource;
+        this.transactionManager = transactionManager;
     }
 
     public void upgradeLevels() throws Exception {
-        PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);// 트랜잭션 매니저 생성
         TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
-
         try {
             List<User> users = userDao.getAll();
             for (User user : users) {

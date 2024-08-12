@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -23,6 +24,8 @@ class UserServiceTest {
     private UserDaoJdbc userDao;
     @Autowired
     private DataSource dataSource;
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     @BeforeEach
     public void init() {
@@ -75,7 +78,7 @@ class UserServiceTest {
     @Test
     void upgradeAllOrNothing() throws Exception {
         // given
-        UserService testUserService = new TestUserService(users.get(3).getId(), userDao, dataSource);
+        UserService testUserService = new TestUserService(users.get(3).getId(), userDao, dataSource, transactionManager);
         // when
         for (User user : users) {
             userDao.add(user);
@@ -101,8 +104,8 @@ class UserServiceTest {
         private String id;
 
         @Autowired
-        private TestUserService(String id, UserDao userDao, DataSource dataSource) {
-            super(userDao, dataSource);
+        private TestUserService(String id, UserDao userDao, DataSource dataSource, PlatformTransactionManager transactionManager) {
+            super(userDao, dataSource, transactionManager);
             this.id = id;
         }
 
