@@ -27,11 +27,25 @@ public class Calculator {
         return lineReadTemplate(filepath, multiplyCallback, 1);
     }
 
-    public Integer lineReadTemplate(String filepath, LineCallback callback, int initVal) throws IOException {
+//    public String concatenate(String filepath) throws IOException {
+//        LineCallback<String> concatenateCallback = new LineCallback<String>() {
+//            @Override
+//            public String doSomethingWithLine(String line, String value) {
+//                return value + line;
+//            }
+//        };
+//        return lineReadTemplate(filepath, concatenateCallback, "");
+//    }
+
+
+
+    // 아하 여기에 있는 지네릭 메서드는 지역변수로서 사용되니까 이렇게 쓰는구나
+    // 결국 중요한 것은 지역변수로 쓰이고 말것이냐 아니면 클래스레벨에서 쓰일것이냐 차이구나?
+    public <T> T lineReadTemplate(String filepath, LineCallback callback, T initVal) throws IOException {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(filepath));
-            Integer res = initVal;
+            T res = initVal;
             String line = null;
             while ((line = br.readLine()) != null) {
                 res = callback.doSomethingWithLine(line, res);
