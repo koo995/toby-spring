@@ -8,7 +8,7 @@ public class Calculator {
 
 
     public Integer calcSum(String filepath) throws IOException {
-        LineCallback sumCallback = new LineCallback() {
+        LineCallback sumCallback = new LineCallback<Integer>() {
             @Override
             public Integer doSomethingWithLine(String line, Integer value) {
                 return value + Integer.valueOf(line);
@@ -18,7 +18,7 @@ public class Calculator {
     }
 
     public Integer calcMultiply(String filepath) throws IOException {
-        LineCallback multiplyCallback = new LineCallback() {
+        LineCallback multiplyCallback = new LineCallback<Integer>() {
             @Override
             public Integer doSomethingWithLine(String line, Integer value) {
                 return value * Integer.valueOf(line);
@@ -41,7 +41,7 @@ public class Calculator {
 
     // 아하 여기에 있는 지네릭 메서드는 지역변수로서 사용되니까 이렇게 쓰는구나
     // 결국 중요한 것은 지역변수로 쓰이고 말것이냐 아니면 클래스레벨에서 쓰일것이냐 차이구나?
-    public <T> T lineReadTemplate(String filepath, LineCallback callback, T initVal) throws IOException {
+    public <T> T lineReadTemplate(String filepath, LineCallback<T> callback, T initVal) throws IOException {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(filepath));
