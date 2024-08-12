@@ -11,7 +11,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static spring.toby.user.UserService.*;
+import static org.assertj.core.api.Assertions.fail;
+import static spring.toby.user.UserService.MIN_LOG_COUNT_FOR_SILVER;
+import static spring.toby.user.UserService.MIN_RECOMMEND_FOR_GOLD;
 
 @Transactional
 @SpringBootTest
@@ -69,6 +71,24 @@ class UserServiceTest {
         assertThat(userWithoutLevelRead.getLevel()).isEqualTo(Level.BASIC);
     }
 
+    @DisplayName("강제 예외 발생을 통한 테스트")
+    @Test
+    void upgradeAllOrNothing() throws Exception {
+        // given
+        UserService testUserService = new TestUserService(users.get(3).getId(), userDao);
+        // when
+        for (User user : users) {
+            userDao.add(user);
+        }
+
+        try {
+            testUserService.upgradeLevels();
+            fail("TestUserServiceException expected");
+        } catch (TestUserServiceException e) {
+        }
+        checkLevelUpgraded(users.get(1), false); // 즉 업그레이드 되었단 말이지
+    }
+
     private void checkLevelUpgraded(User user, boolean upgraded) {
         User userUpdate = userDao.get(user.getId());
         if (upgraded) {
@@ -77,5 +97,21 @@ class UserServiceTest {
             assertThat(userUpdate.getLevel()).isEqualTo(user.getLevel());
         }
     }
+    static class TestUserService extends UserService {
+        private String id;
 
+        @Autowired
+        private TestUserService(String id, UserDao userDao) {
+            super(userDao);
+            this.id = id;
+        }
+
+        protected void upgradeLevels(User user) {
+            if (user.getId().equals(id)) throw new TestUserServiceException();
+            super.upgradeLevel(user);
+        }
+    }
+
+    static class TestUserServiceException extends RuntimeException {
+    }
 }
