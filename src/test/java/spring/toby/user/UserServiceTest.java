@@ -4,12 +4,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +36,8 @@ class UserServiceTest {
     private DataSource dataSource;
     @Autowired
     private PlatformTransactionManager transactionManager;
+    @Autowired
+    private ApplicationContext context;
 
     @BeforeEach
     public void init() {
@@ -83,18 +87,15 @@ class UserServiceTest {
         assertThat(userWithoutLevelRead.getLevel()).isEqualTo(Level.BASIC);
     }
 
-    /**
-     * 여기서... testUserService 을 이용해야 하는데... 팩토리 빈을 불변으로 설정했으니 바꾸기가 어렵네...
-     * 이런 경우를 대비해서 setter 주입을 쓰기도 하는 구나
-     */
     @DisplayName("강제 예외 발생을 통한 테스트")
     @Test
+    @DirtiesContext // 컨텍스트 설정을 변경하기 때문에 이 애너테이션이 필요하다.
     void upgradeAllOrNothing() throws Exception {
         // given
         UserServiceImpl testUserService = new TestUserService(users.get(3).getId(), userDao);
-        TransactionHandler txHandler = new TransactionHandler(testUserService, transactionManager, "upgradeLevels");
-
-        UserService txUserService = (UserService) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{UserService.class}, txHandler);
+        ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
+        txProxyFactoryBean.setTarget(testUserService);
+        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
 
         // when
         for (User user : users) {
