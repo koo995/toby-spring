@@ -3,16 +3,20 @@ package spring.toby.user;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.Mockito.*;
 import static spring.toby.user.UserServiceImpl.MIN_LOG_COUNT_FOR_SILVER;
 import static spring.toby.user.UserServiceImpl.MIN_RECOMMEND_FOR_GOLD;
 
@@ -45,22 +49,19 @@ class UserServiceTest {
     @DisplayName("업그레이드 레벨 테스트")
     @Test
     void upgradeLevels() throws Exception {
-        MockUserDao mockUserDao = new MockUserDao(users);
+        UserDao mockUserDao = Mockito.mock(UserDao.class);
+        when(mockUserDao.getAll()).thenReturn(users);
+
         UserServiceImpl userServiceImpl = new UserServiceImpl(mockUserDao); // 고립된 테스트에서는 테스트 대상 오브젝트를 직접 생성하면 된다.
-
-
-        // given
-        userDao.deleteAll();
-        for (User user : users) {
-            userDao.add(user);
-        }
 
         userServiceImpl.upgradeLevels(); // db 에 저장만 안되었지 업그레이드가 되었는지 안되었는지는 확인이 되구나
 
-        List<User> updated = mockUserDao.getUpdated();
-        assertThat(updated.size()).isEqualTo(2);
-        checkUserAndLevel(updated.get(0), "joytouch", Level.SILVER);
-        checkUserAndLevel(updated.get(1), "madnite1", Level.GOLD);
+        verify(mockUserDao, times(2)).update(any(User.class)); // update 메소드가 두 번 호출됐는지 확인
+        verify(mockUserDao, times(2)).update(any(User.class)); // update 메소드가 두 번 호출됐는지 확인
+        verify(mockUserDao).update(users.get(1)); // 두 번째 호출된 파라미터가 users.get(1)인지 확인
+        assertThat(users.get(1).getLevel()).isEqualTo(Level.SILVER);
+        verify(mockUserDao).update(users.get(3)); // 네 번째 호출된 파라미터가 users.get(3)인지 확인
+        assertThat(users.get(3).getLevel()).isEqualTo(Level.GOLD);
     }
 
     @DisplayName("사용자 추가 테스트")
@@ -86,7 +87,9 @@ class UserServiceTest {
     void upgradeAllOrNothing() throws Exception {
         // given
         UserServiceImpl testUserService = new TestUserService(users.get(3).getId(), userDao);
-        UserServiceTx txUserService = new UserServiceTx(testUserService, transactionManager);
+        TransactionHandler txHandler = new TransactionHandler(testUserService, transactionManager, "upgradeLevels");
+
+        UserService txUserService = (UserService) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{UserService.class}, txHandler);
 
         // when
         for (User user : users) {
@@ -95,10 +98,10 @@ class UserServiceTest {
 
         try {
             txUserService.upgradeLevels();
-//            fail("TestUserServiceException expected");
+            fail("TestUserServiceException expected");
         } catch (TestUserServiceException e) {
         }
-        checkLevelUpgraded(users.get(1), false); // 즉 업그레이드 되었단 말이지
+        checkLevelUpgraded(users.get(1), false); // 즉 업그레이드가 실패되었단 말이지
     }
 
     private void checkUserAndLevel(User updatedUser, String expectedId, Level expectedLevel) {
