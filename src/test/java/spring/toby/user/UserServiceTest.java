@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
@@ -27,7 +26,7 @@ class UserServiceTest {
     @Autowired
     private UserService userService; // TxProxyFactoryBean 에서 생성하는 다이내믹 프록시를 통해 UserService 기능을 사용하게 될 것이다.
     @Autowired
-    private UserServiceImpl userServiceImpl;
+    private UserService testUserService;
 
     private List<User> users;
     @Autowired
@@ -91,21 +90,15 @@ class UserServiceTest {
     @Test
     @DirtiesContext // 컨텍스트 설정을 변경하기 때문에 이 애너테이션이 필요하다.
     void upgradeAllOrNothing() throws Exception {
-        // given
-        UserServiceImpl testUserService = new TestUserService(users.get(3).getId(), userDao);
-        ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
-        txProxyFactoryBean.setTarget(testUserService);
-        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
-
         // when
         for (User user : users) {
             userDao.add(user);
         }
 
         try {
-            txUserService.upgradeLevels();
-            fail("TestUserServiceException expected");
-        } catch (TestUserServiceException e) {
+            testUserService.upgradeLevels();
+            fail("RuntimeException expected");
+        } catch (RuntimeException e) {
         }
         checkLevelUpgraded(users.get(1), false); // 즉 업그레이드가 실패되었단 말이지
     }
@@ -122,24 +115,6 @@ class UserServiceTest {
         } else {
             assertThat(userUpdate.getLevel()).isEqualTo(user.getLevel());
         }
-    }
-
-    static class TestUserService extends UserServiceImpl {
-        private String id;
-
-        @Autowired
-        private TestUserService(String id, UserDao userDao) {
-            super(userDao);
-            this.id = id;
-        }
-
-        protected void upgradeLevel(User user) {
-            if (user.getId().equals(id)) throw new TestUserServiceException();
-            super.upgradeLevel(user);
-        }
-    }
-
-    static class TestUserServiceException extends RuntimeException {
     }
 
     static class MockUserDao implements UserDao {
