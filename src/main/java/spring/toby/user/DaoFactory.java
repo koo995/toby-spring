@@ -24,11 +24,6 @@ public class DaoFactory {
     }
 
     @Bean
-    public JdbcContext jdbcContext() {
-        return new JdbcContext(dataSource());
-    }
-
-    @Bean
     public UserService userServiceImpl() {
         return new UserServiceImpl(userDao());
     }
