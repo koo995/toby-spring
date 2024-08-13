@@ -29,8 +29,8 @@ public class DaoFactory {
     }
 
     @Bean
-    public UserService userService() {
-        return new UserServiceTx(userServiceImpl(), transactionManager());
+    public TxProxyFactoryBean userService() {
+        return new TxProxyFactoryBean(userServiceImpl(), transactionManager(), "upgradeLevels", UserService.class);
     }
 
     @Bean

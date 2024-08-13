@@ -23,7 +23,7 @@ import static spring.toby.user.UserServiceImpl.MIN_RECOMMEND_FOR_GOLD;
 @SpringBootTest
 class UserServiceTest {
     @Autowired
-    private UserService userService;
+    private UserService userService; // TxProxyFactoryBean 에서 생성하는 다이내믹 프록시를 통해 UserService 기능을 사용하게 될 것이다.
     @Autowired
     private UserServiceImpl userServiceImpl;
 
@@ -46,6 +46,7 @@ class UserServiceTest {
     }
 
 
+    // mock 오브젝트를 이용하니까 트랜잭션과는 무관하다.
     @DisplayName("업그레이드 레벨 테스트")
     @Test
     void upgradeLevels() throws Exception {
@@ -82,6 +83,10 @@ class UserServiceTest {
         assertThat(userWithoutLevelRead.getLevel()).isEqualTo(Level.BASIC);
     }
 
+    /**
+     * 여기서... testUserService 을 이용해야 하는데... 팩토리 빈을 불변으로 설정했으니 바꾸기가 어렵네...
+     * 이런 경우를 대비해서 setter 주입을 쓰기도 하는 구나
+     */
     @DisplayName("강제 예외 발생을 통한 테스트")
     @Test
     void upgradeAllOrNothing() throws Exception {
